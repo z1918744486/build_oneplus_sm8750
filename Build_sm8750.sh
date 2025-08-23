@@ -28,7 +28,7 @@ info "5.一加 Ace5 至尊版"
 info "6.真我 GT 7 Pro"
 info "7.真我 GT 7 Pro 竞速"
 
-read -p "输入选择 [1-4]: " device_choice
+read -p "输入选择 [1-7]: " device_choice
 
 case $device_choice in
     1)
@@ -74,7 +74,7 @@ case $device_choice in
         KERNEL_SUFFIX="-android15-8-g013ec21bba94-abogki383916444-4k"
         ;;
     *)
-        error "无效的选择，请输入1-3之间的数字"
+        error "无效的选择，请输入1-7之间的数字"
         ;;
 esac
 
