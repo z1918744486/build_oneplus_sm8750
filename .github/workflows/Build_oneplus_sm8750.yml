@@ -148,20 +148,16 @@ jobs:
           echo "Dir::Cache::archives \"$APT_CACHE_DIR/archives\";" | sudo tee -a /etc/apt/apt.conf.d/90user-cache
 
       # 启用 KPM 驱动补丁
-      - name: 🛠 Apply KPM driver patch (应用 KPM 驱动补丁)
+      - name: 🛠 Enable KPM driver (启用 KPM 驱动)
         if: ${{ github.event.inputs.enable_kpm == 'true' }}
         run: |
-          echo "启用 KPM 驱动补丁"
-          # 假设你有补丁文件 kpm-driver.patch，执行应用补丁的命令
-          # patch -p1 < kpm-driver.patch
-          # 或者如果你需要修改内核配置启用 KPM，可以像下面这样做
-          echo "CONFIG_KPM=y" >> $WORKSPACE/.config
-
-      - name: 🛠 Modify Kernel config to enable KPM (修改内核配置启用 KPM)
-        if: ${{ github.event.inputs.enable_kpm == 'true' }}
-        run: |
-          echo "启用 KPM 驱动"
-          echo "CONFIG_KPM=y" >> $WORKSPACE/.config
+          echo "启用 KPM 驱动..."
+          if [ ! -f "$WORKSPACE/.config" ]; then
+            echo "未找到 .config，创建一个新的"
+            touch $WORKSPACE/.config
+          fi
+          sudo sh -c "echo 'CONFIG_KPM=y' >> $WORKSPACE/.config"
+          echo "KPM 驱动已写入 .config"
 
       - name: 🔧 Build Kernel (编译内核)
         run: |
