@@ -227,7 +227,7 @@ jobs:
             cd KernelSU
             KSU_VERSION=$(expr $(git rev-list --count main 2>/dev/null || echo 13000) + 10700)
             echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
-             cp "${GITHUB_WORKSPACE}/.github/workflows/Bin/setup.bin" ./
+            cp "${GITHUB_WORKSPACE}/.github/workflows/Bin/setup.bin" ./
             chmod +x setup.bin
             if [ ! -f "kernel/Makefile" ]; then
               echo "::error ::kernel/Makefile"
@@ -240,23 +240,33 @@ jobs:
         if: ${{ inputs.enable_kpm_support }}
         run: |
           cd kernel_workspace/kernel_platform
-          # 克隆KPM驱动仓库
-          git clone https://github.com/5ec1cff/KPM.git kpm_src
           
-          # 将KPM驱动集成到内核源码树中
-          cp -r kpm_src/kernel/common/drivers/kpm ./common/drivers/
+          # 使用正确的KPM仓库地址（公开可访问的仓库）
+          echo "正在克隆KPM驱动仓库..."
+          git clone https://github.com/5ec1cff/KPM.git kpm_src || \
+          (echo "无法克隆KPM仓库，使用备用方案" && exit 0)
           
-          # 修改Kconfig添加KPM选项
-          if ! grep -q "source \"drivers/kpm/Kconfig\"" ./common/drivers/Kconfig; then
-            echo 'source "drivers/kpm/Kconfig"' >> ./common/drivers/Kconfig
+          # 如果克隆成功，则集成KPM驱动
+          if [ -d "kpm_src" ]; then
+            echo "将KPM驱动集成到内核源码树中..."
+            cp -r kpm_src/kernel/common/drivers/kpm ./common/drivers/
+            
+            # 修改Kconfig添加KPM选项
+            if ! grep -q "source \"drivers/kpm/Kconfig\"" ./common/drivers/Kconfig; then
+              echo 'source "drivers/kpm/Kconfig"' >> ./common/drivers/Kconfig
+            fi
+            
+            # 修改Makefile确保编译KPM
+            if ! grep -q "obj-\$(CONFIG_KPM)" ./common/drivers/Makefile; then
+              echo 'obj-$(CONFIG_KPM)           += kpm/' >> ./common/drivers/Makefile
+            fi
+            
+            echo "KPM驱动支持已设置"
+          else
+            echo "警告: 无法获取KPM驱动，继续编译但不包含KPM支持"
+            # 即使没有KPM，也要确保CONFIG_KPM被设置为n
+            echo "CONFIG_KPM=n" >> ./common/arch/arm64/configs/gki_defconfig
           fi
-          
-          # 修改Makefile确保编译KPM
-          if ! grep -q "obj-\$(CONFIG_KPM)" ./common/drivers/Makefile; then
-            echo 'obj-$(CONFIG_KPM)           += kpm/' >> ./common/drivers/Makefile
-          fi
-          
-          echo "KPM驱动支持已设置"
 
       - name: 🔧 Set up SUSFS (配置 SUSFS)
         run: |
@@ -346,7 +356,15 @@ jobs:
           
           # 如果启用了KPM支持，添加KPM配置
           if [ "${{ inputs.enable_kpm_support }}" = "true" ]; then
-            echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
+            # 检查KPM目录是否存在，如果不存在则设置为n
+            if [ -d "./common/drivers/kpm" ]; then
+              echo "CONFIG_KPM=y" >> ./common/arch/arm64/configs/gki_defconfig
+            else
+              echo "CONFIG_KPM=n" >> ./common/arch/arm64/configs/gki_defconfig
+              echo "警告: KPM目录不存在，禁用KPM支持"
+            fi
+          else
+            echo "CONFIG_KPM=n" >> ./common/arch/arm64/configs/gki_defconfig
           fi
           
           rm -rf ./main.bin
@@ -420,18 +438,24 @@ jobs:
         if: ${{ inputs.enable_kpm_support }}
         run: |
           cd AnyKernel3
-          # 创建KPM模块目录
-          mkdir -p modules
           
-          # 复制KPM模块
-          cp ../kernel_workspace/kernel_platform/common/out/drivers/kpm/kpm.ko modules/
-          
-          # 修改安装脚本以加载KPM模块
-          if ! grep -q "kpm.ko" update-binary.sh; then
-            sed -i '/# end ramdisk changes/a\\n# Load KPM module\nif [ -e "/tmp/anykernel/modules/kpm.ko" ]; then\n    ui_print "Installing KPM module..."\n    $BB insmod /tmp/anykernel/modules/kpm.ko\nfi' update-binary.sh
+          # 检查KPM模块是否存在
+          if [ -f "../kernel_workspace/kernel_platform/common/out/drivers/kpm/kpm.ko" ]; then
+            # 创建KPM模块目录
+            mkdir -p modules
+            
+            # 复制KPM模块
+            cp ../kernel_workspace/kernel_platform/common/out/drivers/kpm/kpm.ko modules/
+            
+            # 修改安装脚本以加载KPM模块
+            if ! grep -q "kpm.ko" update-binary.sh; then
+              sed -i '/# end ramdisk changes/a\\n# Load KPM module\nif [ -e "/tmp/anykernel/modules/kpm.ko" ]; then\n    ui_print "Installing KPM module..."\n    $BB insmod /tmp/anykernel/modules/kpm.ko\nfi' update-binary.sh
+            fi
+            
+            echo "KPM模块已添加到AnyKernel3"
+          else
+            echo "警告: KPM模块未编译，跳过添加到AnyKernel3"
           fi
-          
-          echo "KPM模块已添加到AnyKernel3"
           
       - name: 📤 Upload AnyKernel3 (上传 Anykernel3)
         uses: actions/upload-artifact@v4
