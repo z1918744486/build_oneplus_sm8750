@@ -234,11 +234,11 @@ jobs:
             echo "::error ::kernel/Makefile"
             ls -la
             exit 1
+            exit 1
           fi
           ./setup.bin
             
       - name: 🔧 Setup KPM support (设置KPM驱动支持)
-        if: ${{ github.event.inputs.enable_kpm == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform
           
@@ -311,6 +311,7 @@ MODULE_VERSION(\"1.0\");" > kpm.c
           fi
           
           echo "KPM驱动支持已设置 (GPL 2.0 Licensed)"
+        if: ${{ github.event.inputs.enable_kpm == 'true' }}
 
       - name: 🔧 Set up SUSFS (配置 SUSFS)
         run: |
@@ -435,13 +436,13 @@ MODULE_VERSION(\"1.0\");" > kpm.c
           sed -i 's/${scm_version}//' ./common/scripts/setlocalversion
           
       - name: 🔧 Add sched_ext (写入风驰补丁)
-        if: ${{ github.event.inputs.enable_feature_z == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform/
           git clone https://github.com/showdo/sched_ext.git
           cp -r ./sched_ext/* ./common/kernel/sched
           rm -rf ./sched_ext/.git
           cd common/kernel/sched  
+        if: ${{ github.event.inputs.enable_feature_z == 'true' }}
 
       - name: 🔨 Build Kernel (构建内核)
         run: |
@@ -471,7 +472,6 @@ MODULE_VERSION(\"1.0\");" > kpm.c
           rm -rf ./main.bin
           
       - name: 📦 Add KPM to AnyKernel3 (添加KPM到AnyKernel3)
-        if: ${{ github.event.inputs.enable_kpm == 'true' }}
         run: |
           cd AnyKernel3
           
@@ -493,6 +493,7 @@ MODULE_VERSION(\"1.0\");" > kpm.c
           else
             echo "警告: KPM模块未编译，跳过添加到AnyKernel3"
           fi
+        if: ${{ github.event.inputs.enable_kpm == 'true' }}
           
       - name: 📤 Upload AnyKernel3 (上传 Anykernel3)
         uses: actions/upload-artifact@v4
