@@ -238,7 +238,7 @@ jobs:
           ./setup.bin
             
       - name: 🔧 Setup KPM support (设置KPM驱动支持)
-        if: ${{ inputs.enable_kpm }}
+        if: ${{ github.event.inputs.enable_kpm == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform
           
@@ -435,7 +435,7 @@ MODULE_VERSION(\"1.0\");" > kpm.c
           sed -i 's/${scm_version}//' ./common/scripts/setlocalversion
           
       - name: 🔧 Add sched_ext (写入风驰补丁)
-        if: ${{ inputs.enable_feature_z }}
+        if: ${{ github.event.inputs.enable_feature_z == 'true' }}
         run: |
           cd kernel_workspace/kernel_platform/
           git clone https://github.com/showdo/sched_ext.git
@@ -471,7 +471,7 @@ MODULE_VERSION(\"1.0\");" > kpm.c
           rm -rf ./main.bin
           
       - name: 📦 Add KPM to AnyKernel3 (添加KPM到AnyKernel3)
-        if: ${{ github.event.inputs.enable_kpm }}
+        if: ${{ github.event.inputs.enable_kpm == 'true' }}
         run: |
           cd AnyKernel3
           
