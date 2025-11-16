@@ -59,7 +59,7 @@ on:
 
 jobs:
   build:
-    name: Build_${{ github.event.inputs.REPO_MANIFEST }}
+    name: Build_${{ github.event.inputs.DEVICES_NAME }}
     runs-on: ubuntu-latest
     env:
       DEVICES_NAME:          ${{ github.event.inputs.DEVICES_NAME }}
@@ -302,7 +302,7 @@ jobs:
             sed -i 's/^\(SUBLEVEL[[:space:]]*=[[:space:]]*\).*/\166/' ./common/Makefile
             fi
             patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch || true
-            cp ../../SukiSU_patch/hooks/scope_min_manual_hooks_v1.5.patch ./
+            cp ../../SukiSU_patch/hooks/scope_min_manual_hooks_v1.6.patch ./
             patch -p1 -F 3 < scope_min_manual_hooks_v1.6.patch
             echo "SUSFS配置完成"
 
