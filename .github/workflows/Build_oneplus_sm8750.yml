@@ -287,24 +287,25 @@ jobs:
             
       - name: 🔧 Set up SUSFS (配置 SUSFS)
         run: |
-           cd kernel_workspace
-            git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
-            git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git
-            cd kernel_platform        
-            cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch ./common/
-            cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
-            cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-            cp -r ../SukiSU_patch/other/zram/lz4k/include/linux/* ./common/include/linux
-            cp -r ../SukiSU_patch/other/zram/lz4k/lib/* ./common/lib
-            cp -r ../SukiSU_patch/other/zram/lz4k/crypto/* ./common/crypto
-            cp -r ../SukiSU_patch/other/zram/lz4k_oplus ./common/lib/
-            if [ "${{ env.DEVICES_NAME }}" = "oneplus_ace5_ultra" ] || [ "${{ env.DEVICES_NAME }}" = "realme_GT7" ] || [ "${{ env.DEVICES_NAME }}" = "realme_GT7pro" ] || [ "${{ env.DEVICES_NAME }}" = "realme_GT7pro_Speed" ]; then
-            sed -i 's/^\(SUBLEVEL[[:space:]]*=[[:space:]]*\).*/\166/' ./common/Makefile
-            fi
-            patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch || true
-            cp ../../SukiSU_patch/hooks/scope_min_manual_hooks_v1.6.patch ./
-            patch -p1 -F 3 < scope_min_manual_hooks_v1.6.patch
-            echo "SUSFS配置完成"
+          cd kernel_workspace
+          git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android15-6.6
+          git clone https://github.com/SukiSU-Ultra/SukiSU_patch.git
+          cd kernel_platform
+          cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android15-6.6.patch common/
+          cp ../susfs4ksu/kernel_patches/fs/* common/fs/
+          cp ../susfs4ksu/kernel_patches/include/linux/* common/include/linux/
+          if [ "$DEVICES_NAME" = "oneplus_ace5_ultra" ] \
+            || [ "$DEVICES_NAME" = "realme_GT7" ] \
+            || [ "$DEVICES_NAME" = "realme_GT7pro" ] \
+            || [ "$DEVICES_NAME" = "realme_GT7pro_Speed" ]; then
+            sed -i 's/^\(SUBLEVEL[[:space:]]*=[[:space:]]*\).*/\166/' common/Makefile
+          fi
+          ( cd common && patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch ) || true
+          cp ../SukiSU_patch/hooks/scope_min_manual_hooks_v1.6.patch .
+          patch -p1 -F 3 < scope_min_manual_hooks_v1.6.patch
+      
+          echo "SUSFS 配置完成"
+
 
           
       - name: 🔧 Set gki_defconfig (设置编译配置) 
