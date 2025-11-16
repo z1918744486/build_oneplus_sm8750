@@ -303,7 +303,7 @@ jobs:
             || [ "$DEVICES_NAME" = "realme_GT7pro_Speed" ]; then
             sed -i 's/^\(SUBLEVEL[[:space:]]*=[[:space:]]*\).*/\166/' common/Makefile
           fi
-          ( cd common && sed -i 's|vma = find_vma(mm|struct vm_area_struct *&|' ./fs/proc/task_mmu.c && patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch ) || true
+          ( cd common && patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch ) || true
           cp ../SukiSU_patch/hooks/scope_min_manual_hooks_v1.6.patch common/
           ( cd common && patch -p1 -F 3 < scope_min_manual_hooks_v1.6.patch )
           echo "SUSFS 配置完成"
