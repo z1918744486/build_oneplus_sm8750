@@ -196,7 +196,7 @@ jobs:
           mkdir -p "$APT_CACHE_DIR/lists/partial"
           sudo apt -o Dir::Cache="$APT_CACHE_DIR" update -qq
           sudo DEBIAN_FRONTEND=noninteractive apt -o Dir::Cache="$APT_CACHE_DIR" install -yq --no-install-recommends \
-            python3 p7zip-full git curl ccache libelf-dev \
+            python3 dos2unix p7zip-full git curl ccache libelf-dev \
             build-essential libelf-dev flex bison libssl-dev \
             libncurses-dev liblz4-tool zlib1g-dev \
             libxml2-utils rsync unzip
