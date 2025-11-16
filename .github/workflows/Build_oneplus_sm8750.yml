@@ -385,6 +385,21 @@ jobs:
       - name: 🔧 Apply Sched Patch (应用完美风驰补丁)
         run: |
           cd kernel_workspace/kernel_platform/common
+          fix_ksu_devpts_stub() {
+            local file="fs/devpts/inode.c"
+            if grep -q "int ksu_handle_devpts(struct inode \*inode)" "$file"; then
+              echo "ksu_handle_devpts stub 已存在，跳过"
+              return
+            fi
+            echo "为 ksu_handle_devpts 注入 stub 实现..."
+            cat >> "$file" << 'EOF'
+          int ksu_handle_devpts(struct inode *inode)
+          {
+                  return 0;
+          }
+          EOF
+          }
+          fix_ksu_devpts_stub
           if [ "${{ env.ENABLE_FEATURE_Z }}" = "true" ]; then
             git clone https://github.com/Numbersf/SCHED_PATCH.git -b "sm8750"
             echo "正在拉取风驰补丁"
