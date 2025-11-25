@@ -99,7 +99,7 @@ jobs:
               ;;
             oneplus_ace5_ultra)
               echo "REPO_MANIFEST=mt6991_v_15.0.2_ace5_ultra" >> $GITHUB_ENV
-              echo "SCHED_FILE=oneplus_13_b" >> $GITHUB_ENV
+              echo "SCHED_FILE=oneplus_ace5_ultra" >> $GITHUB_ENV
               ;;
             realme_GT7)
               echo "SCHED_FILE=none" >> $GITHUB_ENV
