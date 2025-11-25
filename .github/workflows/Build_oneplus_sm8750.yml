@@ -102,7 +102,8 @@ jobs:
               echo "SCHED_FILE=oneplus_ace5_ultra" >> $GITHUB_ENV
               ;;
             realme_GT7)
-              echo "SCHED_FILE=none" >> $GITHUB_ENV
+              echo "REPO_MANIFEST=mt6991_v_15.0.2_ace5_ultra" >> $GITHUB_ENV
+              echo "SCHED_FILE=oneplus_ace5_ultra" >> $GITHUB_ENV
               ;;
             realme_GT7pro)
               echo "SCHED_FILE=none" >> $GITHUB_ENV
@@ -165,11 +166,11 @@ jobs:
           sudo apt update &&
           sudo apt-get install -y --no-install-recommends binutils python-is-python3 libssl-dev libelf-dev dos2unix ccache p7zip-full &
           echo "正在克隆源码仓库..."
-          if [ "${DEVICES_NAME}" = "realme_GT7" ] || [ "${DEVICES_NAME}" = "realme_GT7pro" ] || [ "${DEVICES_NAME}" = "realme_GT7pro_Speed" ]; then
+          if [ "${DEVICES_NAME}" = "realme_GT7pro" ] || [ "${DEVICES_NAME}" = "realme_GT7pro_Speed" ]; then
             aria2c -s16 -x16 -k1M https://github.com/realme-kernel-opensource/realme_GT7pro-AndroidB-common-source/archive/refs/heads/master.zip -o common.zip
             unzip -q common.zip && 
             mv "realme_GT7pro-AndroidB-common-source-master" common
-          elif [ "${DEVICES_NAME}" = "oneplus_ace5_ultra" ]; then
+          elif [ "${DEVICES_NAME}" = "oneplus_ace5_ultra" ] || [ "${DEVICES_NAME}" = "realme_GT7" ]; then
             aria2c -s16 -x16 -k1M https://github.com/OnePlusOSS/android_kernel_oneplus_mt6991/archive/refs/heads/oneplus/${REPO_MANIFEST}.zip -o common.zip
             unzip -q common.zip && 
             mv "android_kernel_oneplus_mt6991-oneplus-${REPO_MANIFEST}" common
