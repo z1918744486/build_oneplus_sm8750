@@ -47,11 +47,11 @@ on:
         default: true
         type: boolean
 
-      enable_feature_c:
-        description: "开启SUSFS(用于增强隐藏环境挂载功能; 可能轻微增加耗电，上游更新导致不稳定时或不需要可关闭)"
-        required: false
-        default: true
-        type: boolean
+      # enable_feature_c:
+      #   description: "开启SUSFS(用于增强隐藏环境挂载功能; 可能轻微增加耗电，上游更新导致不稳定时或不需要可关闭)"
+      #   required: false
+      #   default: true
+      #   type: boolean
 
       enable_feature_b:
          description: "选择网络调度"
@@ -295,7 +295,7 @@ jobs:
 
             
       - name: 🔧 Set up SUSFS (配置 SUSFS)
-        if: ${{ env.ENABLE_FEATURE_C == 'true' }}
+        # if: ${{ env.ENABLE_FEATURE_C == 'true' }}
         run: |
           cd kernel_workspace
           echo "正在添加SukiSU Ultra补丁..."
