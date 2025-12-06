@@ -47,12 +47,6 @@ on:
         default: true
         type: boolean
 
-      # enable_feature_c:
-      #   description: "开启SUSFS(用于增强隐藏环境挂载功能; 可能轻微增加耗电，上游更新导致不稳定时或不需要可关闭)"
-      #   required: false
-      #   default: true
-      #   type: boolean
-
       enable_feature_b:
          description: "选择网络调度"
          required: false
@@ -279,7 +273,7 @@ jobs:
         run: |
           cd kernel_workspace
           echo "正在配置SukiSU Ultra..."
-          curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/refs/heads/main/kernel/setup.sh" | bash -s builtin
+          curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/refs/heads/main/kernel/setup.sh" | bash -s tmp-builtin
           cd ./KernelSU
           # 获取当前 Git 提交的短哈希 (8位)
           GIT_COMMIT_HASH=$(git rev-parse --short=8 HEAD)
@@ -288,7 +282,7 @@ jobs:
           # 尝试最多 3 次获取 KernelSU API 版本号
           for i in {1..3}; do
             # 从远程 Kbuild 中提取 KSU_API_VERSION
-            KSU_API_VERSION=$(curl -s "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/builtin/kernel/Kbuild" | 
+            KSU_API_VERSION=$(curl -s "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/tmp-builtin/kernel/Kbuild" | 
               # 查找第一个包含版本定义的行
               grep -m1 "KSU_VERSION_API :=" | 
               # 提取等号后的值
@@ -336,7 +330,6 @@ jobs:
 
             
       - name: 🔧 Set up SUSFS (配置 SUSFS)
-        # if: ${{ env.ENABLE_FEATURE_C == 'true' }}
         run: |
           cd kernel_workspace
           echo "正在添加SukiSU Ultra补丁..."
