@@ -46,6 +46,11 @@ on:
         required: false
         default: true
         type: boolean
+      enable_hymo:
+        description: "添加Hymo实现(高性能混合挂载元模块)"
+        required: false
+        default: true
+        type: boolean
 
       enable_feature_b:
          description: "选择网络调度"
@@ -64,13 +69,14 @@ jobs:
     name: Build_${{ github.event.inputs.DEVICES_NAME }}
     runs-on: ubuntu-latest
     env:
-      DEVICES_NAME:          ${{ github.event.inputs.DEVICES_NAME }}
+      DEVICES_NAME:           ${{ github.event.inputs.DEVICES_NAME }}
       KEEP_ORIGINAL_SETTINGS: ${{ github.event.inputs.keep_original_settings }}
       CUSTOM_KERNEL_SUFFIX:   ${{ github.event.inputs.custom_kernel_suffix }}
       CUSTOM_KERNEL_TIME:     ${{ github.event.inputs.custom_kernel_time }}
       ENABLE_FEATURE_Z:       ${{ github.event.inputs.enable_feature_z }}
       ENABLE_FEATURE_A:       ${{ github.event.inputs.enable_feature_a }}
       ENABLE_FEATURE_B:       ${{ github.event.inputs.enable_feature_b }}
+      ENABLE_HYMO:            ${{ github.event.inputs.enable_hymo }}
       ENABLE_FEATURE_C:       ${{ github.event.inputs.enable_feature_c }}
     steps:
       - uses: actions/checkout@v4
@@ -341,6 +347,12 @@ jobs:
           cp ./SukiSU_patch/69_hide_stuff.patch ./common/
           cd ./common
           patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch || true
+          if [ "${{ env.ENABLE_HYMO }}" = "true" ]; then
+            echo "添加Hymo-高性能混合挂载元模块"
+            wget https://raw.githubusercontent.com/Anatdx/HymoFS/refs/heads/main/patch/hymofs_with_susfs.patch
+            patch -p1 -F 3 < hymofs_with_susfs.patch
+            echo "CONFIG_HYMOFS=y" >> ./arch/arm64/configs/gki_defconfig
+          fi
 
 
 
