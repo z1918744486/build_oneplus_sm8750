@@ -154,7 +154,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends binutils python-is-python3 libssl-dev libelf-dev dos2unix ccache p7zip-full &
           echo "正在克隆源码仓库..."
           if [ "${DEVICES_NAME}" = "realme_GT7pro" ] || [ "${DEVICES_NAME}" = "realme_GT7pro_Speed" ] || [ "${DEVICES_NAME}" = "realme_GT8" ]; then
-            aria2c -s16 -x16 -k1M https://github.com/realme-kernel-opensource/realme_GT8-AndroidB-common-source/archive/refs/heads/master.zip -o common.zip
+            aria2c -s16 -x16 -k1M https://github.com/realme-kernel-opensource/realme_GT7Pro-AndroidB-common-source/archive/refs/heads/master.zip -o common.zip
             unzip -q common.zip && 
             mv "realme_GT7pro-AndroidB-common-source-master" common
           elif [ "${DEVICES_NAME}" = "oneplus_ace5_ultra" ] || [ "${DEVICES_NAME}" = "realme_GT7" ]; then
