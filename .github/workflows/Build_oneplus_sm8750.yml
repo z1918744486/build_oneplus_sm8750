@@ -47,11 +47,6 @@ on:
         default: true
         type: boolean
 
-      enable_unicode_bypass:
-        description: "应用Unicode零宽绕过补丁"
-        required: false
-        default: true
-        type: boolean
        
 
 
@@ -66,7 +61,6 @@ jobs:
       CUSTOM_KERNEL_TIME:     ${{ github.event.inputs.custom_kernel_time }}
       ENABLE_SCX:       ${{ github.event.inputs.enable_scx }}
       ENABLE_BBG:       ${{ github.event.inputs.enable_bbg }}
-      ENABLE_UNICODE_BYPASS: ${{ github.event.inputs.enable_unicode_bypass }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -330,11 +324,6 @@ jobs:
           cp ./SukiSU_patch/69_hide_stuff.patch ./common/
           cd ./common
           patch -p1 < 50_add_susfs_in_gki-android15-6.6.patch || true
-          if [ "${{ env.ENABLE_UNICODE_BYPASS }}" = "true" ]; then
-            cp "${GITHUB_WORKSPACE}/.github/workflows/Bin/unicode_bypass_fix.patch" ./
-            echo "📦 正在应用Unicode零宽绕过修复补丁..."
-            patch -p1 < unicode_bypass_fix.patch
-          fi
 
 
 
